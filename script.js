@@ -16,4 +16,19 @@ class Player {
         this.radius = radius
         this.color = color
     }
+
+    draw() {
+        ctx.beginPath()
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
+        ctx.fillStyle = this.color
+        ctx.fill()
+    }
 }
+
+const x = canvas.width / 2
+const y = canvas.height / 2
+
+const player = new Player(x, y, 30, 'pink');
+player.draw()
+
+console.log(player)
