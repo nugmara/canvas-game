@@ -1,5 +1,6 @@
 // Select our canvas with querySelector
 // Select our context, in this case 2d since the game is 2d, declaring ctx
+console.log(gsap)
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -114,25 +115,25 @@ function spawnEnemies() {
   }, 1000);
 }
 
-
-let animationId
+let animationId;
 function animate() {
   animationId = requestAnimationFrame(animate);
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   projectiles.forEach((projectile, index) => {
     projectile.update();
 
     // remove from edges of screen
-    if (projectile.x + projectile.radius < 0 || 
-        projectile.x - projectile.radius > canvas.width || 
-        projectile.y + projectile.radius < 0 ||
-        projectile.y - projectile.radius > canvas.height 
+    if (
+      projectile.x + projectile.radius < 0 ||
+      projectile.x - projectile.radius > canvas.width ||
+      projectile.y + projectile.radius < 0 ||
+      projectile.y - projectile.radius > canvas.height
     ) {
-        setTimeout(() => {
-            projectiles.splice(index, 1)
-        }, 0)
+      setTimeout(() => {
+        projectiles.splice(index, 1);
+      }, 0);
     }
   });
 
@@ -143,7 +144,7 @@ function animate() {
 
     // end game
     if (dist - enemy.radius - player.radius < 1) {
-        cancelAnimationFrame(animationId)
+      cancelAnimationFrame(animationId);
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
@@ -151,10 +152,17 @@ function animate() {
 
       // Objects touch
       if (dist - enemy.radius - projectile.radius < 1) {
-        setTimeout(() => {
-          enemies.splice(index, 1);
-          projectiles.splice(projectileIndex, 1);
-        }, 0);
+        if (enemy.radius - 10 > 10) {
+          enemy.radius -= 10
+          setTimeout(() => {
+            projectiles.splice(projectileIndex, 1)
+          }, 0)
+        } else {
+          setTimeout(() => {
+            enemies.splice(index, 1);
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
+        }
       }
     });
   });
