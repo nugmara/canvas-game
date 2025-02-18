@@ -85,7 +85,7 @@ const y = canvas.height / 2;
 
 // We declare a new const called player equal to a new instance of player
 // With the values we want to have for our player from the Player Class
-const player = new Player(x, y, 30, "pink");
+const player = new Player(x, y, 10, "white");
 const projectiles = [];
 const enemies = [];
 
@@ -103,7 +103,7 @@ function spawnEnemies() {
       x = Math.random() * canvas.width;
       y = Math.random() < 0.5 ? 0 - radius : canvas.height + radius;
     }
-    const color = "green";
+    const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
 
     const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x);
     const velocity = {
@@ -114,21 +114,12 @@ function spawnEnemies() {
   }, 1000);
 }
 
-const projectile = new Projectile(
-  canvas.width / 2,
-  canvas.height / 2,
-  5,
-  "purple",
-  {
-    x: 1,
-    y: 1,
-  }
-);
 
 let animationId
 function animate() {
   animationId = requestAnimationFrame(animate);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
   projectiles.forEach((projectile, index) => {
     projectile.update();
@@ -170,17 +161,16 @@ function animate() {
 }
 
 addEventListener("click", (e) => {
-    console.log(projectiles)
   const angle = Math.atan2(
     e.clientY - canvas.height / 2,
     e.clientX - canvas.width / 2
   );
   const velocity = {
-    x: Math.cos(angle),
-    y: Math.sin(angle),
+    x: Math.cos(angle) * 5,
+    y: Math.sin(angle) * 5,
   };
   projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, "purple", velocity)
+    new Projectile(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
   );
 });
 
