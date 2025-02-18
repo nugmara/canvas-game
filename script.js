@@ -130,8 +130,19 @@ function animate() {
   animationId = requestAnimationFrame(animate);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   player.draw();
-  projectiles.forEach((projectile) => {
+  projectiles.forEach((projectile, index) => {
     projectile.update();
+
+    // remove from edges of screen
+    if (projectile.x + projectile.radius < 0 || 
+        projectile.x - projectile.radius > canvas.width || 
+        projectile.y + projectile.radius < 0 ||
+        projectile.y - projectile.radius > canvas.height 
+    ) {
+        setTimeout(() => {
+            projectiles.splice(index, 1)
+        }, 0)
+    }
   });
 
   enemies.forEach((enemy, index) => {
@@ -159,6 +170,7 @@ function animate() {
 }
 
 addEventListener("click", (e) => {
+    console.log(projectiles)
   const angle = Math.atan2(
     e.clientY - canvas.height / 2,
     e.clientX - canvas.width / 2
