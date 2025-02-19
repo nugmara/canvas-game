@@ -1,6 +1,5 @@
 // Select our canvas with querySelector
 // Select our context, in this case 2d since the game is 2d, declaring ctx
-console.log(gsap)
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -80,6 +79,38 @@ class Enemy {
   }
 }
 
+
+const friction = 0.98
+class Particle {
+  constructor(x, y, radius, color, velocity) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.velocity = velocity;
+    this.alpha = 1;
+  }
+
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.alpha;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  update() {
+    this.draw();
+    this.velocity.x *= friction
+    this.velocity.y *= friction
+    this.x = this.x + this.velocity.x;
+    this.y = this.y + this.velocity.y;
+    this.alpha -= 0.01;
+  }
+}
+
 // Put the player on the center of the canvas
 const x = canvas.width / 2;
 const y = canvas.height / 2;
@@ -89,6 +120,7 @@ const y = canvas.height / 2;
 const player = new Player(x, y, 10, "white");
 const projectiles = [];
 const enemies = [];
+const particles = [];
 
 function spawnEnemies() {
   setInterval(() => {
@@ -121,6 +153,13 @@ function animate() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
+  particles.forEach((particle, index) => {
+    if (particle.alpha <= 0) {
+      particles.splice(index, 1);
+    } else {
+      particle.update();
+    }
+  });
   projectiles.forEach((projectile, index) => {
     projectile.update();
 
@@ -150,13 +189,25 @@ function animate() {
     projectiles.forEach((projectile, projectileIndex) => {
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
-      // Objects touch
+      // When projectiles touch enemy
       if (dist - enemy.radius - projectile.radius < 1) {
-        if (enemy.radius - 10 > 10) {
-          enemy.radius -= 10
+        // Create explosions
+        for (let i = 0; i < enemy.radius * 2; i++) {
+          particles.push(
+            new Particle(projectile.x, projectile.y, 
+                Math.random() * 2, enemy.color, {
+              x: (Math.random() - 0.5) * (Math.random() * 6),
+              y: (Math.random() - 0.5) * (Math.random() * 6),
+            })
+          );
+        }
+        if (enemy.radius - 10 > 5) {
+          gsap.to(enemy, {
+            radius: enemy.radius - 10,
+          });
           setTimeout(() => {
-            projectiles.splice(projectileIndex, 1)
-          }, 0)
+            projectiles.splice(projectileIndex, 1);
+          }, 0);
         } else {
           setTimeout(() => {
             enemies.splice(index, 1);
