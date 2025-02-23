@@ -3,7 +3,7 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 
-const scoreEl = document.querySelector('#scoreEl')
+const scoreEl = document.querySelector("#scoreEl");
 
 // Size of our canvas
 canvas.width = innerWidth;
@@ -81,8 +81,7 @@ class Enemy {
   }
 }
 
-
-const friction = 0.98
+const friction = 0.98;
 class Particle {
   constructor(x, y, radius, color, velocity) {
     this.x = x;
@@ -105,8 +104,8 @@ class Particle {
 
   update() {
     this.draw();
-    this.velocity.x *= friction
-    this.velocity.y *= friction
+    this.velocity.x *= friction;
+    this.velocity.y *= friction;
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
     this.alpha -= 0.01;
@@ -150,7 +149,7 @@ function spawnEnemies() {
 }
 
 let animationId;
-let score = 0
+let score = 0;
 function animate() {
   animationId = requestAnimationFrame(animate);
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
@@ -178,18 +177,24 @@ function animate() {
       }, 0);
     }
   });
+  for (let index = enemies.length - 1; index >= 0; index--) {
+    const enemy = enemies[index];
 
-  enemies.forEach((enemy, index) => {
     enemy.update();
 
     const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y);
 
-    // end game
     if (dist - enemy.radius - player.radius < 1) {
       cancelAnimationFrame(animationId);
     }
 
-    projectiles.forEach((projectile, projectileIndex) => {
+    for (
+      let projectilesIndex = projectiles.length - 1;
+      projectilesIndex >= 0;
+      projectilesIndex--
+    ) {
+      const projectile = projectiles[projectilesIndex];
+
       const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
       // When projectiles touch enemy
@@ -197,35 +202,37 @@ function animate() {
         // Create explosions
         for (let i = 0; i < enemy.radius * 2; i++) {
           particles.push(
-            new Particle(projectile.x, projectile.y, 
-                Math.random() * 2, enemy.color, {
-              x: (Math.random() - 0.5) * (Math.random() * 6),
-              y: (Math.random() - 0.5) * (Math.random() * 6),
-            })
+            new Particle(
+              projectile.x,
+              projectile.y,
+              Math.random() * 2,
+              enemy.color,
+              {
+                x: (Math.random() - 0.5) * (Math.random() * 6),
+                y: (Math.random() - 0.5) * (Math.random() * 6),
+              }
+            )
           );
         }
         // This is where we shrink our enemies
         if (enemy.radius - 10 > 5) {
-            score += 100
-            scoreEl.innerHTML = score
+          score += 100;
+          scoreEl.innerHTML = score;
           gsap.to(enemy, {
             radius: enemy.radius - 10,
           });
-          // Remove enemy if they are too small
-          score += 150
-          scoreEl.innerHTML = score
-          setTimeout(() => {
-            projectiles.splice(projectileIndex, 1);
-          }, 0);
+          projectiles.splice(projectilesIndex, 1);
         } else {
-          setTimeout(() => {
-            enemies.splice(index, 1);
-            projectiles.splice(projectileIndex, 1);
-          }, 0);
+          // Remove enemy if they are too small
+          score += 150;
+          scoreEl.innerHTML = score;
+
+          enemies.splice(index, 1);
+          projectiles.splice(projectilesIndex, 1);
         }
       }
-    });
-  });
+    }
+  }
 }
 
 addEventListener("click", (e) => {
