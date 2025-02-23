@@ -155,14 +155,18 @@ function animate() {
   ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   player.draw();
-  particles.forEach((particle, index) => {
+  for (let index = particles.length - 1; index >= 0; index--) {
+    const particle = particles[index];
+
     if (particle.alpha <= 0) {
       particles.splice(index, 1);
     } else {
       particle.update();
     }
-  });
-  projectiles.forEach((projectile, index) => {
+  }
+  for (let index = projectiles.length - 1; index >= 0; index--) {
+    const projectile = projectiles[index];
+
     projectile.update();
 
     // remove from edges of screen
@@ -172,11 +176,9 @@ function animate() {
       projectile.y + projectile.radius < 0 ||
       projectile.y - projectile.radius > canvas.height
     ) {
-      setTimeout(() => {
-        projectiles.splice(index, 1);
-      }, 0);
+      projectiles.splice(index, 1);
     }
-  });
+  }
   for (let index = enemies.length - 1; index >= 0; index--) {
     const enemy = enemies[index];
 
