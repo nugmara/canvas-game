@@ -14,7 +14,7 @@ body {
     user-select: none;
 }
 
-#game-over {
+.game-over {
     display: none;
     position: absolute;
     background-color: white;
@@ -33,7 +33,7 @@ body {
     color: gray;
 }
 
-#score-h1 {
+.score-h1 {
     font-size: 48px;
     margin-bottom: 0;
     margin-top: 8px;
